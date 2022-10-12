@@ -17,6 +17,7 @@ class CreateTodosTable extends Migration
             $table->id();
             $table->string('title');
             $table->string('description');
+            $table->string('file')->nullable();
             $table->foreignId('assigned_to_id')->constrained('users');
             $table->timestamps();
         });

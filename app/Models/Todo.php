@@ -10,4 +10,9 @@ class Todo extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function assignedTo()
+    {
+        return $this->belongsTo(User::class, 'assigned_to_id');
+    }
 }

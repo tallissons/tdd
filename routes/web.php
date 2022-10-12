@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\Todo\CreateController;
+use App\Http\Controllers\Todo\DeleteController;
+use App\Http\Controllers\Todo\IndexController;
+use App\Http\Controllers\Todo\UpdateController;
 use App\Mail\Invitation;
 use App\Models\Invite;
 use App\Models\Todo;
@@ -26,22 +30,17 @@ Route::get('/', function () {
 
 Route::post('/register', RegisterController::class)->name('register');
 
-Route::post('invite', function(){
-    Mail::to(request()->email)->send(new Invitation());
-    Invite::create(['email' => request()->email]);
+Route::middleware('auth')->group(function(){
+    Route::post('invite', function(){
+        Mail::to(request()->email)->send(new Invitation());
+        Invite::create(['email' => request()->email]);
+    });
+
+    Route::get('todo', IndexController::class)->name('todo.index');
+
+    Route::post('todo', CreateController::class)->name('todo.store');
+
+    Route::put('todo/{todo}', UpdateController::class)->name('todo.update');
+
+    Route::delete('todo/{todo}', DeleteController::class)->name('todo.delete');
 });
-
-Route::get('todo', function(){
-    return view('todo', ['todos' => Todo::all()]);
-})->name('todo.index');
-
-Route::post('todo', function(){
-    Todo::query()
-        ->create([
-            'title' => request()->title,
-            'description' => request()->description,
-            'assigned_to_id' => request()->assignedTo
-        ]);
-
-    return redirect()->route('todo.index');
-})->name('todo.store');
